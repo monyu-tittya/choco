@@ -8,6 +8,7 @@ const state = {
     penColor: '#F44336',
     stampChar: '❤️',
     stampSize: 30,
+    penSize: 5,
 };
 
 // Canvas & History
@@ -51,6 +52,7 @@ function init() {
 
     // Initial tool
     setPenColor('#F44336'); // Red default
+    state.penSize = parseInt(document.getElementById('pen-size').value);
 }
 
 // --- Logic ---
@@ -166,7 +168,7 @@ function handleMove(e) {
     currentPath.push(pos);
     redraw(); // Redraw history + current line
     // Draw current line live
-    drawPath(currentPath, state.penColor, true);
+    drawPath(currentPath, state.penColor, state.penSize, true);
 }
 
 function handleEnd(e) {
@@ -176,6 +178,7 @@ function handleEnd(e) {
         addAction({
             type: 'path',
             color: state.penColor,
+            size: state.penSize,
             points: currentPath
         });
         currentPath = [];
@@ -225,24 +228,23 @@ function redraw() {
         if (action.type === 'clear') {
             ctx.clearRect(0, 0, 256, 256);
         } else if (action.type === 'path') {
-            drawPath(action.points, action.color);
+            drawPath(action.points, action.color, action.size || 5);
         } else if (action.type === 'stamp') {
             drawStamp(action.char, action.x, action.y, action.size);
         }
     }
 }
 
-function drawPath(points, color, isRoughtDraft = false) {
+function drawPath(points, color, size, isRoughtDraft = false) {
     if (points.length < 2) return;
 
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.lineWidth = 5;
 
     // Chocolate Pen Effect: Darker border + Lighter center
     // 1. Shadow/Border
     ctx.strokeStyle = adjustColor(color, -40); // Darker
-    ctx.lineWidth = 7;
+    ctx.lineWidth = size + 2;
     ctx.beginPath();
     ctx.moveTo(points[0].x, points[0].y);
     points.forEach(p => ctx.lineTo(p.x, p.y));
@@ -250,7 +252,7 @@ function drawPath(points, color, isRoughtDraft = false) {
 
     // 2. Main Color
     ctx.strokeStyle = color;
-    ctx.lineWidth = 5;
+    ctx.lineWidth = size;
     ctx.beginPath();
     ctx.moveTo(points[0].x, points[0].y);
     points.forEach(p => ctx.lineTo(p.x, p.y));
@@ -258,10 +260,12 @@ function drawPath(points, color, isRoughtDraft = false) {
 
     // 3. Highlight (Gloss)
     ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = Math.max(1, size * 0.4);
     ctx.beginPath();
-    ctx.moveTo(points[0].x - 1, points[0].y - 1);
-    points.forEach(p => ctx.lineTo(p.x - 1, p.y - 1));
+    // Offset slightly for 3D effect direction
+    const offset = size * 0.2;
+    ctx.moveTo(points[0].x - offset, points[0].y - offset);
+    points.forEach(p => ctx.lineTo(p.x - offset, p.y - offset));
     ctx.stroke();
 }
 
@@ -274,6 +278,10 @@ function drawStamp(char, x, y, size) {
 }
 
 // Helpers
+function updatePenSize(val) {
+    state.penSize = parseInt(val);
+}
+
 function setPenColor(color) {
     state.penColor = color;
     // Visual update
@@ -298,6 +306,12 @@ function selectStamp(char) {
     showToast(`スタンプ: ${char}`);
 }
 
+function setCustomStamp(val) {
+    if (!val) return;
+    state.stampChar = val;
+    document.querySelectorAll('.stamp-btn').forEach(btn => btn.classList.remove('active-stamp'));
+}
+
 function updateMessage() {
     const val = document.getElementById('msg-input').value;
     document.getElementById('card-text').innerText = val;
@@ -310,6 +324,9 @@ function showResult() {
     createSparkles();
     document.getElementById('result').classList.remove('hidden');
     document.querySelector('.bg-red-400 h1').innerText = "💝 Happy Valentine! 💝";
+
+    // Add shine to choco
+    document.getElementById('choco-preview').classList.add('shine-effect');
 }
 
 function createSparkles() {

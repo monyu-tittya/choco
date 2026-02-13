@@ -122,3 +122,22 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #aaa;
 }
+
+/* Shine Effect for completed choco */
+@keyframes shine {
+    0% {
+        filter: brightness(1) drop-shadow(0 10px 15px rgba(0, 0, 0, 0.15));
+    }
+
+    50% {
+        filter: brightness(1.2) drop-shadow(0 10px 25px rgba(255, 100, 100, 0.4));
+    }
+
+    100% {
+        filter: brightness(1) drop-shadow(0 10px 15px rgba(0, 0, 0, 0.15));
+    }
+}
+
+.shine-effect {
+    animation: shine 2s infinite ease-in-out;
+}

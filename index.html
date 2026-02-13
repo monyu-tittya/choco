@@ -40,7 +40,7 @@
         <!-- Chocolate Preview Area -->
         <div
             class="relative h-80 bg-pink-50 flex items-center justify-center p-4 overflow-hidden border-b-4 border-dashed border-red-200">
-            <div id="sparkle-container" class="absolute inset-0 pointer-events-none z-0"></div>
+            <div id="sparkle-container" class="absolute inset-0 pointer-events-none z-40"></div>
 
             <div id="choco-preview"
                 class="relative w-64 h-64 flex items-center justify-center choco-shadow transition-transform duration-300 z-10">
@@ -182,24 +182,22 @@
                         oninput="updatePenSize(this.value)">
                 </div>
 
-                <!-- Pen Colors (13 colors) -->
                 <div class="grid grid-cols-7 gap-2 mb-4 justify-items-center">
-                    <!-- Black, Red, White, Blue, Green, Purple, Yellow -->
-                    <button onclick="setPenColor('#1A1A1A')" class="color-dot bg-[#1A1A1A]" title="黒"></button>
-                    <button onclick="setPenColor('#F44336')" class="color-dot bg-[#F44336]" title="赤"></button>
-                    <button onclick="setPenColor('#FFFFFF')" class="color-dot bg-white border border-gray-300"
-                        title="白"></button>
-                    <button onclick="setPenColor('#2196F3')" class="color-dot bg-[#2196F3]" title="青"></button>
-                    <button onclick="setPenColor('#4CAF50')" class="color-dot bg-[#4CAF50]" title="緑"></button>
-                    <button onclick="setPenColor('#9C27B0')" class="color-dot bg-[#9C27B0]" title="紫"></button>
-                    <button onclick="setPenColor('#FFEB3B')" class="color-dot bg-[#FFEB3B]" title="黄色"></button>
-                    <!-- Pink, Orange, LightBlue, Lime, LightPurple, Gray -->
-                    <button onclick="setPenColor('#E91E63')" class="color-dot bg-[#E91E63]" title="ピンク"></button>
+                    <button onclick="setPenColor('#3D2B1F')" class="color-dot bg-[#3D2B1F]" title="チョコ"></button>
+                    <button onclick="setPenColor('#D32F2F')" class="color-dot bg-[#D32F2F]" title="赤"></button>
+                    <button onclick="setPenColor('#FFF9E5')" class="color-dot bg-[#FFF9E5] border border-gray-300"
+                        title="ホワイト"></button>
+                    <button onclick="setPenColor('#0055B3')" class="color-dot bg-[#0055B3]" title="青"></button>
+                    <button onclick="setPenColor('#2E7D32')" class="color-dot bg-[#2E7D32]" title="緑"></button>
+                    <button onclick="setPenColor('#7B1FA2')" class="color-dot bg-[#7B1FA2]" title="紫"></button>
+                    <button onclick="setPenColor('#FBC02D')" class="color-dot bg-[#FBC02D]" title="黄色"></button>
+
+                    <button onclick="setPenColor('#F06292')" class="color-dot bg-[#F06292]" title="ピンク"></button>
                     <button onclick="setPenColor('#FF9800')" class="color-dot bg-[#FF9800]" title="オレンジ"></button>
-                    <button onclick="setPenColor('#03A9F4')" class="color-dot bg-[#03A9F4]" title="水色"></button>
-                    <button onclick="setPenColor('#CDDC39')" class="color-dot bg-[#CDDC39]" title="黄緑"></button>
-                    <button onclick="setPenColor('#E1BEE7')" class="color-dot bg-[#E1BEE7]" title="薄紫"></button>
-                    <button onclick="setPenColor('#9E9E9E')" class="color-dot bg-[#9E9E9E]" title="灰色"></button>
+                    <button onclick="setPenColor('#4FC3F7')" class="color-dot bg-[#4FC3F7]" title="水色"></button>
+                    <button onclick="setPenColor('#8BC34A')" class="color-dot bg-[#8BC34A]" title="黄緑"></button>
+                    <button onclick="setPenColor('#CE93D8')" class="color-dot bg-[#CE93D8]" title="薄紫"></button>
+                    <button onclick="setPenColor('#757575')" class="color-dot bg-[#757575]" title="灰色"></button>
                 </div>
 
                 <div class="flex gap-2 mb-6">
@@ -268,7 +266,12 @@
                     <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🎀')">🎀</button>
                     <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('✨')">✨</button>
                 </div>
-                <p class="text-xs text-center text-gray-400 mb-4">スタンプを選んで、チョコの上をタップしてね！</p>
+                <div class="mb-4">
+                    <label class="text-xs text-gray-500 block mb-1">好きな文字・絵文字を入力:</label>
+                    <input type="text" id="custom-stamp" placeholder="例: 🐶, A, 💯" maxlength="2"
+                        class="w-full p-2 border border-gray-200 rounded-lg text-center text-xl bg-white focus:border-red-400 outline-none"
+                        oninput="setCustomStamp(this.value)">
+                </div>
 
                 <div class="flex gap-2">
                     <button onclick="nextStep(2)"
