@@ -53,6 +53,7 @@ function init() {
     // Initial tool
     setPenColor('#F44336'); // Red default
     state.penSize = parseInt(document.getElementById('pen-size').value);
+    nextStep(1);
 }
 
 // --- Logic ---
