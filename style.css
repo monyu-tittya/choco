@@ -1,0 +1,124 @@
+body {
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    touch-action: none;
+}
+
+.font-hand {
+    font-family: 'Klee One', cursive;
+}
+
+.choco-shadow {
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.15));
+}
+
+.step-transition {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.color-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.color-dot:active {
+    transform: scale(0.9);
+}
+
+.active-color {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 2px #ff4d4d;
+    z-index: 10;
+}
+
+.shape-btn.active-shape {
+    border-color: #F87171;
+    /* red-400 */
+    background-color: #FEF2F2;
+    /* red-50 */
+}
+
+.shape-btn.active-shape svg {
+    color: #F87171;
+}
+
+.active-ring {
+    box-shadow: 0 0 0 2px #F87171;
+}
+
+.stamp-btn {
+    transition: background-color 0.2s;
+    cursor: pointer;
+    user-select: none;
+}
+
+.stamp-btn.active-stamp {
+    background-color: #FECACA;
+    /* red-200 */
+    transform: scale(1.1);
+}
+
+/* Sparkle Animation */
+.sparkle {
+    position: absolute;
+    pointer-events: none;
+    background-image: url('data:image/svg+xml;utf8,<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 0 L13 7 L20 10 L13 13 L10 20 L7 13 L0 10 L7 7 Z" fill="white"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0;
+    z-index: 50;
+}
+
+@keyframes sparkle-anim {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.5) rotate(180deg);
+        opacity: 0;
+    }
+}
+
+.animate-sparkle {
+    animation: sparkle-anim 1.5s ease-out forwards;
+}
+
+/* Scrollbar styling for stamp grid */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+}

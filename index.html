@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>チョコメーカー</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'choco-bitter': '#5D4037',
+                        'choco-milk': '#8D6E63',
+                        'choco-white': '#FFF9C4',
+                        'choco-strawberry': '#FFCDD2',
+                        'choco-mango': '#FFCC80',
+                    },
+                    fontFamily: {
+                        'hand': ['"Klee One"', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="min-h-screen flex flex-col items-center p-4 bg-pink-50">
+
+    <div id="game-container" class="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden mt-4 relative">
+        <!-- Header -->
+        <div class="bg-red-400 p-4 text-white text-center shadow-md z-10 relative">
+            <h1 class="text-xl font-bold">🍫 チョコメーカー 💖</h1>
+        </div>
+
+        <!-- Chocolate Preview Area -->
+        <div
+            class="relative h-80 bg-pink-50 flex items-center justify-center p-4 overflow-hidden border-b-4 border-dashed border-red-200">
+            <div id="sparkle-container" class="absolute inset-0 pointer-events-none z-0"></div>
+
+            <div id="choco-preview"
+                class="relative w-64 h-64 flex items-center justify-center choco-shadow transition-transform duration-300 z-10">
+                <!-- SVG Area (Base Shape) -->
+                <svg id="svg-display" viewBox="0 0 200 200" class="absolute inset-0 w-full h-full drop-shadow-xl">
+                    <g id="choco-path-container"></g>
+                </svg>
+
+                <!-- Canvas for Decoration (Pen & Stamps) -->
+                <!-- Use a slightly larger canvas to cover edges -->
+                <canvas id="drawing-canvas" width="256" height="256"
+                    class="absolute inset-0 z-20 w-full h-full"></canvas>
+
+                <!-- Message Card (Tilted) -->
+                <div id="message-card"
+                    class="hidden absolute bottom-2 right-[-10px] bg-white p-3 pr-6 pl-4 rounded-sm shadow-lg transform rotate-[-5deg] border border-gray-200 z-30 font-hand text-gray-700 leading-tight max-w-[150px] break-words text-sm">
+                    <span id="card-text">Happy Valentine!</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Area -->
+        <div class="p-6 bg-white relative z-20">
+            <!-- Step Indicators -->
+            <div class="flex justify-between mb-6 px-2">
+                <div id="indicator-1"
+                    class="w-8 h-8 rounded-full flex items-center justify-center bg-red-400 text-white font-bold shadow-sm transition-all">
+                    1</div>
+                <div class="h-1 flex-1 bg-gray-200 self-center mx-1 rounded-full"></div>
+                <div id="indicator-2"
+                    class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200 text-gray-400 font-bold shadow-sm transition-all">
+                    2</div>
+                <div class="h-1 flex-1 bg-gray-200 self-center mx-1 rounded-full"></div>
+                <div id="indicator-3"
+                    class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200 text-gray-400 font-bold shadow-sm transition-all">
+                    3</div>
+                <div class="h-1 flex-1 bg-gray-200 self-center mx-1 rounded-full"></div>
+                <div id="indicator-4"
+                    class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200 text-gray-400 font-bold shadow-sm transition-all">
+                    4</div>
+            </div>
+
+            <!-- Step 1: Base & Shape -->
+            <div id="step-1" class="step-transition">
+                <p class="text-sm font-bold text-gray-600 mb-2 border-b-2 border-red-100 pb-1">1. 形と味を決めてね</p>
+
+                <!-- Shapes -->
+                <div class="flex justify-between mb-4 gap-2">
+                    <button onclick="setShape('square')"
+                        class="shape-btn flex-1 p-2 border-2 border-gray-100 rounded-xl hover:border-red-300 flex justify-center bg-gray-50 aspect-square items-center transition-colors">
+                        <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current text-gray-400">
+                            <rect x="4" y="4" width="16" height="16" rx="2" />
+                        </svg>
+                    </button>
+                    <button onclick="setShape('circle')"
+                        class="shape-btn flex-1 p-2 border-2 border-gray-100 rounded-xl hover:border-red-300 flex justify-center bg-gray-50 aspect-square items-center transition-colors">
+                        <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current text-gray-400">
+                            <circle cx="12" cy="12" r="9" />
+                        </svg>
+                    </button>
+                    <button onclick="setShape('star')"
+                        class="shape-btn flex-1 p-2 border-2 border-gray-100 rounded-xl hover:border-red-300 flex justify-center bg-gray-50 aspect-square items-center transition-colors">
+                        <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current text-gray-400">
+                            <path
+                                d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                        </svg>
+                    </button>
+                    <button onclick="setShape('diamond')"
+                        class="shape-btn flex-1 p-2 border-2 border-gray-100 rounded-xl hover:border-red-300 flex justify-center bg-gray-50 aspect-square items-center transition-colors">
+                        <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current text-gray-400">
+                            <path d="M12 2L2 12l10 10 10-10L12 2z" />
+                        </svg>
+                    </button>
+                    <button onclick="setShape('heart')"
+                        class="shape-btn flex-1 p-2 border-2 border-gray-100 rounded-xl hover:border-red-300 flex justify-center bg-gray-50 aspect-square items-center transition-colors">
+                        <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current text-gray-400">
+                            <path
+                                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Colors -->
+                <div class="grid grid-cols-5 gap-3 mb-6">
+                    <button onclick="setBase('#5D4037', 'ビター')" class="flex flex-col items-center group">
+                        <div
+                            class="w-10 h-10 rounded-full bg-choco-bitter shadow-sm group-hover:scale-110 transition-transform ring-offset-2 ring-transparent group-active:ring-2 active-ring">
+                        </div>
+                        <span class="text-[10px] mt-1 text-gray-500">ビター</span>
+                    </button>
+                    <button onclick="setBase('#8D6E63', 'ミルク')" class="flex flex-col items-center group">
+                        <div
+                            class="w-10 h-10 rounded-full bg-choco-milk shadow-sm group-hover:scale-110 transition-transform ring-offset-2 ring-transparent group-active:ring-2 active-ring">
+                        </div>
+                        <span class="text-[10px] mt-1 text-gray-500">ミルク</span>
+                    </button>
+                    <button onclick="setBase('#FFF9C4', 'ホワイト')" class="flex flex-col items-center group">
+                        <div
+                            class="w-10 h-10 rounded-full bg-choco-white shadow-sm border border-gray-200 group-hover:scale-110 transition-transform ring-offset-2 ring-transparent group-active:ring-2 active-ring">
+                        </div>
+                        <span class="text-[10px] mt-1 text-gray-500">ホワイト</span>
+                    </button>
+                    <button onclick="setBase('#FFCDD2', 'いちご')" class="flex flex-col items-center group">
+                        <div
+                            class="w-10 h-10 rounded-full bg-choco-strawberry shadow-sm group-hover:scale-110 transition-transform ring-offset-2 ring-transparent group-active:ring-2 active-ring">
+                        </div>
+                        <span class="text-[10px] mt-1 text-gray-500">いちご</span>
+                    </button>
+                    <button onclick="setBase('#FFCC80', 'マンゴー')" class="flex flex-col items-center group">
+                        <div
+                            class="w-10 h-10 rounded-full bg-choco-mango shadow-sm group-hover:scale-110 transition-transform ring-offset-2 ring-transparent group-active:ring-2 active-ring">
+                        </div>
+                        <span class="text-[10px] mt-1 text-gray-500">マンゴー</span>
+                    </button>
+                </div>
+
+                <button onclick="nextStep(2)"
+                    class="w-full bg-red-400 text-white py-3 rounded-2xl font-bold hover:bg-red-500 shadow-md transition-all active:scale-95">次へ進む
+                    ➔</button>
+            </div>
+
+            <!-- Step 2: Drawing (Pen) -->
+            <div id="step-2" class="hidden step-transition">
+                <div class="flex justify-between items-center mb-2 border-b-2 border-red-100 pb-1">
+                    <p class="text-sm font-bold text-gray-600">2. チョコペンでお絵かき</p>
+                    <div class="flex gap-2">
+                        <button onclick="undo()" class="text-xs bg-gray-100 px-2 py-1 rounded hover:bg-gray-200">↩️
+                            元に戻す</button>
+                        <button onclick="redo()" class="text-xs bg-gray-100 px-2 py-1 rounded hover:bg-gray-200">↪️
+                            やり直し</button>
+                    </div>
+                </div>
+
+                <!-- Pen Specs -->
+                <div class="mb-3 flex items-center gap-2">
+                    <span class="text-xs text-gray-500">太さ:</span>
+                    <input type="range" id="pen-size" min="2" max="15" value="5"
+                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-400"
+                        oninput="updatePenSize(this.value)">
+                </div>
+
+                <!-- Pen Colors (13 colors) -->
+                <div class="grid grid-cols-7 gap-2 mb-4 justify-items-center">
+                    <!-- Black, Red, White, Blue, Green, Purple, Yellow -->
+                    <button onclick="setPenColor('#1A1A1A')" class="color-dot bg-[#1A1A1A]" title="黒"></button>
+                    <button onclick="setPenColor('#F44336')" class="color-dot bg-[#F44336]" title="赤"></button>
+                    <button onclick="setPenColor('#FFFFFF')" class="color-dot bg-white border border-gray-300"
+                        title="白"></button>
+                    <button onclick="setPenColor('#2196F3')" class="color-dot bg-[#2196F3]" title="青"></button>
+                    <button onclick="setPenColor('#4CAF50')" class="color-dot bg-[#4CAF50]" title="緑"></button>
+                    <button onclick="setPenColor('#9C27B0')" class="color-dot bg-[#9C27B0]" title="紫"></button>
+                    <button onclick="setPenColor('#FFEB3B')" class="color-dot bg-[#FFEB3B]" title="黄色"></button>
+                    <!-- Pink, Orange, LightBlue, Lime, LightPurple, Gray -->
+                    <button onclick="setPenColor('#E91E63')" class="color-dot bg-[#E91E63]" title="ピンク"></button>
+                    <button onclick="setPenColor('#FF9800')" class="color-dot bg-[#FF9800]" title="オレンジ"></button>
+                    <button onclick="setPenColor('#03A9F4')" class="color-dot bg-[#03A9F4]" title="水色"></button>
+                    <button onclick="setPenColor('#CDDC39')" class="color-dot bg-[#CDDC39]" title="黄緑"></button>
+                    <button onclick="setPenColor('#E1BEE7')" class="color-dot bg-[#E1BEE7]" title="薄紫"></button>
+                    <button onclick="setPenColor('#9E9E9E')" class="color-dot bg-[#9E9E9E]" title="灰色"></button>
+                </div>
+
+                <div class="flex gap-2 mb-6">
+                    <button onclick="clearCanvasLayer()"
+                        class="flex-1 py-2 bg-red-50 text-red-500 rounded-lg text-xs hover:bg-red-100 font-bold">全部消す</button>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="nextStep(1)"
+                        class="flex-1 py-3 bg-gray-100 text-gray-500 rounded-2xl font-bold hover:bg-gray-200">戻る</button>
+                    <button onclick="nextStep(3)"
+                        class="flex-[2] py-3 bg-red-400 text-white rounded-2xl font-bold hover:bg-red-500 shadow-md">次へ
+                        (トッピング) ➔</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Toppings (Stamps) -->
+            <div id="step-3" class="hidden step-transition">
+                <div class="flex justify-between items-center mb-2 border-b-2 border-red-100 pb-1">
+                    <p class="text-sm font-bold text-gray-600">3. スタンプでデコ</p>
+                    <div class="flex gap-2">
+                        <button onclick="undo()"
+                            class="text-xs bg-gray-100 px-2 py-1 rounded hover:bg-gray-200">↩️</button>
+                        <button onclick="redo()"
+                            class="text-xs bg-gray-100 px-2 py-1 rounded hover:bg-gray-200">↪️</button>
+                    </div>
+                </div>
+
+                <!-- Size Slider -->
+                <div class="mb-3 flex items-center gap-2">
+                    <span class="text-xs text-gray-500">サイズ:</span>
+                    <input type="range" id="stamp-size" min="10" max="60" value="30"
+                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-400">
+                </div>
+
+                <!-- Emoji Grid -->
+                <div
+                    class="grid grid-cols-7 gap-1 max-h-40 overflow-y-auto mb-4 p-1 border border-gray-100 rounded-lg bg-gray-50">
+                    <!-- Specific Emojis -->
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('❤️')">❤️</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🩷')">🩷</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🧡')">🧡</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('💛')">💛</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('💚')">💚</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('💙')">💙</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('💜')">💜</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🩵')">🩵</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🤎')">🤎</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🖤')">🖤</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🩶')">🩶</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🤍')">🤍</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('⭐')">⭐</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🍙')">🍙</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🍪')">🍪</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🍩')">🍩</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🍰')">🍰</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🧁')">🧁</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🍭')">🍭</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🍬')">🍬</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('💊')">💊</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🩸')">🩸</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🔗')">🔗</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🔪')">🔪</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🧸')">🧸</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('👓')">👓</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('🎀')">🎀</button>
+                    <button class="stamp-btn p-1 text-xl hover:bg-white rounded" onclick="selectStamp('✨')">✨</button>
+                </div>
+                <p class="text-xs text-center text-gray-400 mb-4">スタンプを選んで、チョコの上をタップしてね！</p>
+
+                <div class="flex gap-2">
+                    <button onclick="nextStep(2)"
+                        class="flex-1 py-3 bg-gray-100 text-gray-500 rounded-2xl font-bold hover:bg-gray-200">戻る</button>
+                    <button onclick="nextStep(4)"
+                        class="flex-[2] py-3 bg-red-400 text-white rounded-2xl font-bold hover:bg-red-500 shadow-md">次へ
+                        (メッセージ) ➔</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Message -->
+            <div id="step-4" class="hidden step-transition">
+                <p class="text-sm font-bold text-gray-600 mb-3 border-b-2 border-red-100 pb-1">4. メッセージカード</p>
+                <textarea id="msg-input" maxlength="30" placeholder="Happy Valentine!&#10;大好きだよ♡"
+                    class="w-full p-3 h-24 border-2 border-red-100 rounded-xl mb-4 focus:outline-none focus:border-red-400 font-hand text-gray-700 leading-snug"
+                    oninput="updateMessage()"></textarea>
+
+                <button onclick="showResult()"
+                    class="w-full bg-gradient-to-r from-red-400 to-pink-500 text-white py-4 rounded-2xl font-bold text-lg hover:shadow-lg transform transition-all hover:scale-[1.02] mb-3">チョコを完成させる！
+                    ✨</button>
+                <button onclick="nextStep(3)" class="w-full text-gray-400 py-2 text-sm">戻る</button>
+            </div>
+
+            <!-- Result -->
+            <div id="result" class="hidden text-center step-transition">
+                <h2 class="text-2xl font-bold text-red-500 mb-2 animate-bounce">かわいい💖</h2>
+                <p class="text-gray-600 text-sm mb-6">世界に一つだけのチョコができたね！</p>
+                <div class="flex gap-2">
+                    <button onclick="resetGame()"
+                        class="flex-1 bg-gray-100 text-gray-600 py-3 rounded-xl font-bold hover:bg-gray-200">最初から</button>
+                    <!-- Add Save Button functionality later if needed -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast"
+        class="fixed top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm opacity-0 pointer-events-none transition-opacity duration-300 shadow-lg z-50">
+        メッセージ
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
